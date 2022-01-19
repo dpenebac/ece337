@@ -1,16 +1,24 @@
 // $Id: $
 // File name:   adder_4bit.sv
-// Created:     1/18/2022
+// Created:     1/19/2022
 // Author:      Dorien Penebacker
 // Lab Section: 337-09
 // Version:     1.0  Initial Design Entry
-// Description: 4-bit Full Adder Design
+// Description: Test
 
-module adder_4bit(input logic a, b, carry_in, output logic sum, carry_out);
-	//adder_1bit(input logic a, b, carry_in, output logic sum, carry_out);
+module adder_4bit(input logic [3:0] a, b, input logic carry_in, output logic [3:0] sum, output logic overflow);
+	logic [5:0] carrys;
+	genvar i;
+	
+	assign carrys[0] = carry_in;
 
-	//adder_1bit ADDER1(.a(), .b(), .carry_in(), .sum(), .carry_out());
-	adder_1bit ADDER1(.a(), .b(), .carry_in(), .sum(), .carry_out());
-	adder_1bit ADDER2(.a(), .b(), .carry_in(), .sum(), .carry_out());
-	adder_1bit ADDER3(.a(), .b(), .carry_in(), .sum(), .carry_out());
+	generate
+	for (i = 0; i <= 4; i = i + 1)
+		begin
+			adder_1bit 1X (.a(a[i]), .b(b[i]), .carry_in(carrys[i]), .sum(sum[i]), .carry_out(carrys[i+1]));
+		end
+	endgenerate
+
+	assign overflow = carrys[5];
+
 endmodule
