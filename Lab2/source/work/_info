@@ -1,0 +1,58 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 d/home/ecegrid/a/mg108/ece337/Lab2/source
+vadder_nbit
+Z1 DXx6 sv_std 3 std 0 22 >9az<^>2ff9DAl3OFGaAf1
+!s110 1642881067
+!i10b 1
+!s100 Oi7QCBNk@I?kk[FA411`L1
+IB>ZR]dU?j3EUe^g1?hmc;3
+Z2 VDg1SIo80bB@j0V0VzS_@n1
+!s105 adder_nbit_sv_unit
+S1
+R0
+w1642880925
+8adder_nbit.sv
+Fadder_nbit.sv
+L0 9
+Z3 OE;L;10.7a;67
+r1
+!s85 0
+31
+!s108 1642881066.000000
+!s107 adder_nbit.sv|
+!s90 adder_nbit.sv|
+!i113 0
+Z4 o-L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+Z5 tCvgOpt 0
+vtb_adder_4bit
+R1
+!s110 1642882155
+!i10b 1
+!s100 2Z@`k_NjLR:bcUU:Z>1g81
+IH3mAeYfcOoFHlS0B3ii8a3
+R2
+!s105 tb_adder_nbit_sv_unit
+S1
+R0
+w1642881802
+8tb_adder_nbit.sv
+Ftb_adder_nbit.sv
+L0 18
+R3
+r1
+!s85 0
+31
+!s108 1642882155.000000
+!s107 tb_adder_nbit.sv|
+!s90 -reportprogress|300|tb_adder_nbit.sv|
+!i113 0
+R4
+R5
