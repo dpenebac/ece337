@@ -7,18 +7,18 @@
 // Description: Test
 
 module adder_4bit(input logic [3:0] a, b, input logic carry_in, output logic [3:0] sum, output logic overflow);
-	logic [5:0] carrys;
+	logic [4:0] carrys;
 	genvar i;
 	
 	assign carrys[0] = carry_in;
 
 	generate
-	for (i = 0; i <= 4; i = i + 1)
+	for (i = 0; i <= 3; i = i + 1)
 		begin
-			adder_1bit 1X (.a(a[i]), .b(b[i]), .carry_in(carrys[i]), .sum(sum[i]), .carry_out(carrys[i+1]));
+			adder_1bit IX(.a(a[i]), .b(b[i]), .carry_in(carrys[i]), .sum(sum[i]), .carry_out(carrys[i+1]));
 		end
 	endgenerate
 
-	assign overflow = carrys[5];
+	assign overflow = carrys[4];
 
 endmodule

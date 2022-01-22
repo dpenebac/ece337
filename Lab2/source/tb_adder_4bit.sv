@@ -8,67 +8,47 @@
 
 `timescale 1ns / 100ps
 
-module tb_adder_1bit
+module tb_adder_4bit
 ();
-	// Define local parameters used by the test bench
-	localparam NUM_INPUT_BITS			= 4;
-	localparam NUM_OUTPUT_BITS		= NUM_INPUT_BITS + 1;
-	localparam MAX_OUTPUT_BIT			= NUM_OUTPUT_BITS - 1;
-	localparam NUM_TEST_BITS 			= (NUM_INPUT_BITS * 2) + 1;
-	localparam MAX_TEST_BIT				= NUM_TEST_BITS - 1;
-	localparam NUM_TEST_CASES 		= 2 ** NUM_TEST_BITS;
-	localparam MAX_TEST_VALUE 		= NUM_TEST_CASES - 1;
-	localparam TEST_A_BIT					= 0;
-	localparam TEST_B_BIT					= NUM_INPUT_BITS;
-	localparam TEST_CARRY_IN_BIT	= MAX_TEST_BIT;
-	localparam TEST_SUM_BIT				= 0;
-	localparam TEST_CARRY_OUT_BIT	= MAX_OUTPUT_BIT;
-	localparam TEST_DELAY					= 10;
-	
 	// Declare Design Under Test (DUT) portmap signals
-	wire	tb_a;
-	wire	tb_b;
-	wire	tb_carry_in;
-	wire	tb_sum;
-	wire	tb_carry_out;
+	wire [3:0] tb_a;
+	wire [3:0] tb_b;
+	wire tb_carry_in;
+	wire [3:0] tb_sum;
+	wire tb_overflow;
 	
 	// Declare test bench signals
 	integer tb_test_case;
-	reg [MAX_TEST_BIT:0] tb_test_inputs;
-	reg [MAX_OUTPUT_BIT:0] tb_expected_outputs;
+	integer allg;
+	reg [8:0] tb_test_inputs;
+	reg [4:0] tb_expected_outputs;
 	
 	// DUT port map
-	adder_1bit DUT(.a(tb_a), .b(tb_b), .carry_in(tb_carry_in), .sum(tb_sum), .carry_out(tb_carry_out));
-	
+	adder_4bit DUT(.a(tb_a), .b(tb_b), .carry_in(tb_carry_in), .sum(tb_sum), .overflow(tb_overflow));
+
 	// Connect individual test input bits to a vector for easier testing
-	assign tb_a					= tb_test_inputs[TEST_A_BIT];
-	assign tb_b					= tb_test_inputs[TEST_B_BIT];
-	assign tb_carry_in	= tb_test_inputs[TEST_CARRY_IN_BIT];
-	
-	// Test bench process
+	//testInputs = {a, b, cin}
+	assign tb_a = tb_test_inputs[8:5];
+	assign tb_b	= tb_test_inputs[4:1];
+	assign tb_carry_in = tb_test_inputs[0];
+
 	initial
 	begin
-		// Initialize test inputs for DUT
 		tb_test_inputs = 0;
+		allg = 1;
 		
-		// Interative Exhaustive Testing Loop
-		for(tb_test_case = 0; tb_test_case < NUM_TEST_CASES; tb_test_case = tb_test_case + 1)
+		for(tb_test_case = 0; tb_test_case < 512; tb_test_case = tb_test_case + 1)
 		begin
-			// Send test input to the design
-			tb_test_inputs = tb_test_case[MAX_TEST_BIT:0];
-			
-			// Wait for a bit to allow this process to catch up with assign statements triggered
-			// by test input assignment above
-			#1;
-			
-			// Calculate the expected outputs
+			tb_test_inputs = tb_test_case[8:0];
+
+			#1; //delay
+
 			tb_expected_outputs = tb_a + tb_b + tb_carry_in;
 			
-			// Wait for DUT to process the inputs
-			#(TEST_DELAY - 1);
-			
+			#(10 - 1); //delay
+
 			// Check the DUT's Sum output value
-			if(tb_expected_outputs[TEST_SUM_BIT] == tb_sum)
+			if(tb_expected_outputs[3:0] == tb_sum)
 			begin
 				$info("Correct Sum value for test case %d!", tb_test_case);
 			end
@@ -78,7 +58,7 @@ module tb_adder_1bit
 			end
 			
 			// Check the DUT's Carry Out output value
-			if(tb_expected_outputs[TEST_CARRY_OUT_BIT] == tb_carry_out)
+			if(tb_expected_outputs[4] == tb_overflow)
 			begin
 				$info("Correct Carry Out value for test case %d!", tb_test_case);
 			end
@@ -92,10 +72,10 @@ module tb_adder_1bit
 	// Wrap-up process
 	final
 	begin
-		if(NUM_TEST_CASES != tb_test_case)
+		if(512 != tb_test_case)
 		begin
 			// Didn't run the test bench through all test cases
-			$display("This test bench was not run long enough to execute all test cases. Please run this test bench for at least a total of %d ns", (NUM_TEST_CASES * TEST_DELAY));
+			$display("This test bench was not run long enough to execute all test cases. Please run this test bench for at least a total of %d ns", (512 * 10));
 		end
 		else
 		begin
