@@ -1,0 +1,229 @@
+#@ # 
+#@ # Running dc_shell Version K-2015.06-SP1 for linux64 -- Jul 21, 2015
+#@ # Date:   Sat Feb  5 16:09:33 2022
+#@ # Run by: mg108@cparch05.ecn.purdue.edu
+#@ 
+
+source /package/eda/synopsys/syn-K-2015.06-SP1/admin/setup/.synopsys_dc.setup
+#@ # -- Starting source /package/eda/synopsys/syn-K-2015.06-SP1/admin/setup/.synopsys_dc.setup
+
+#@ #
+#@ #		".synopsys_dc.setup" Initialization File for
+#@ #
+#@ #		    Dc_Shell and Design_Analyzer
+#@ #
+#@ #	The variables in this file define the behavior of many parts
+#@ #	of the Synopsys Synthesis Tools.  Upon installation, they should 
+#@ #	be reviewed and modified to fit your site's needs.  Each engineer
+#@ #	can have a .synopsys file in his/her home directory or current
+#@ #	directory to override variable settings in this file.  
+#@ #
+#@ #  	Each logical grouping of variables is commented as to their 
+#@ #	nature and effect on the Synthesis Commands.  Examples of
+#@ #	variable groups are the Compile Variable Group, which affects 
+#@ #	the designs produced by the COMPILE command, and the Schematic 
+#@ #	Variable Group, which affects the output of the create_schematic
+#@ #	command.
+#@ #
+#@ #	You can type "man <group_name>_variables" in dc_shell or 
+#@ #	design_analyzer to get help about a group of variables.
+#@ #	For instance, to get help about the "system" variable group, 
+#@ #	type "help system_variables".  You can also type
+#@ #	"man <variable name>", to get help on the that variable's 
+#@ #	group.
+#@ #
+#@ 
+#@ # System variables
+#@ set sh_command_abbrev_mode       "Anywhere"
+#@ set sh_continue_on_error         "true"
+#@ update_app_var -default true sh_continue_on_error
+#@ set sh_enable_page_mode          "true"
+#@ update_app_var -default true sh_enable_page_mode
+#@ set sh_source_uses_search_path   "true"
+#@ update_app_var -default true sh_source_uses_search_path
+#@ if {$synopsys_program_name == "dc_shell" ||     $synopsys_program_name == "de_shell" ||     $synopsys_program_name == "dc_sms_shell" } {
+#@ set sh_new_variable_message	 "false"
+#@ update_app_var -default false sh_new_variable_message
+#@ } else {
+#@ set sh_new_variable_message	 "true"
+#@ update_app_var -default true sh_new_variable_message
+#@ }
+#@ 
+#@ if {$synopsys_program_name == "dc_shell"} {
+#@ set html_log_enable	     "false"
+#@ set html_log_filename	 "default.html"
+#@ }
+#@ 
+#@ if {$synopsys_program_name == "de_shell"} {
+#@ set de_log_html_filename	 "default.html"
+#@ }
+#@ 
+#@ if { [string compare $dc_shell_mode "tcl"] == 0 } {
+#@  set sh_enable_line_editing       "true"
+#@  set sh_line_editing_mode         "emacs"
+#@ }
+#@ 
+#@ if {$synopsys_program_name == "icc_shell"} {
+#@  if {"$sh_output_log_file" == ""} {
+#@   set sh_output_log_file "icc_output.txt"
+#@  }
+#@ 
+#@ ## the variable sh_redirect_progress_messages only makes it possible 
+#@ ## for some commands to redirect progress messages to the log file,thereby
+#@ ## bypassing the console and reducing the volume of messages on the console.
+#@  set sh_redirect_progress_messages true
+#@  }
+#@ 
+#@ 
+#@ # Suppress new variable messages for the following variables
+#@ array set auto_index {}
+#@ set auto_oldpath ""
+#@ 
+#@ # Enable customer support banner on fatal
+#@ if { $sh_arch == "linux"    || $sh_arch == "amd64"    || $sh_arch == "linux64" ||     $sh_arch == "suse32"   || $sh_arch == "suse64"   ||      $sh_arch == "sparcOS5" || $sh_arch == "sparc64"  ||      $sh_arch == "x86sol32" || $sh_arch == "x86sol64" ||      $sh_arch == "rs6000"   || $sh_arch == "aix64" } {
+#@    setenv SYNOPSYS_TRACE ""
+#@ }
+#@ 
+#@ #
+#@ # Load the procedures which make up part of the user interface.
+#@ #
+#@ if { [string compare $dc_shell_mode "tcl"] == 0 } {
+#@   source $synopsys_root/auxx/syn/.dc_common_procs.tcl
+#@   if {$synopsys_program_name != "dc_sms_shell"} {
+#@     source $synopsys_root/auxx/syn/.dc_procs.tcl
+#@   }
+#@   alias list_commands help
+#@ }
+#@ # -- Starting source /package/eda/synopsys/syn-K-2015.06-SP1/auxx/syn/.dc_common_procs.tcl
+
+#@ ##############################################################################
+#@ #
+#@ #
+#@ # FILE:         auxx/syn/.dc_common_procs.tcl
+#@ #
+#@ # ABSTRACT:     These procedures are part of the PrimeTime and DC
+#@ #               user interface.
+#@ #               They are loaded by .synopsys_pt.setup and .synopsys_dc.setup.
+#@ #
+#@ ##############################################################################
+#@ #
+#@ #
+#@ 
+#@ 
+#@ ##############################################################################
+#@ #
+#@ #
+#@ #  PROCEDURE:   group_variable
+#@ #
+#@ #  ABSTRACT:    Add a variable to the specified variable group.
+#@ #               This command is typically used by the system
+#@ #               administrator only.
+#@ #
+#@ #               Below the proc is the command which creates the command
+#@ #               help information and semantic data for the argument.
+#@ #
+#@ #  RETURNS:     1 if it is successful.
+#@ #               error code if the variable does not exist.
+#@ #               error code of the variable is already in the group.
+#@ #
+#@ #  SYNTAX:      group_variable group_name variable_name
+#@ #
+#@ ##############################################################################
+#@ #
+#@ 
+#@ 
+#@ proc group_variable { args } {
+#@   global _Variable_Groups
+#@ 
+#@   parse_proc_arguments -args $args resarr
+#@   set group $resarr(group)
+#@   set var $resarr(variable_name)
+#@ 
+#@   if { ![info exists _Variable_Groups($group)] } {
+#@    set _Variable_Groups($group) ""
+#@   }
+#@ 
+#@   # Verify that var exists as a global variable
+#@ 
+#@   set cmd "uplevel #0 \{info exists $var\}"
+#@   if { ![eval $cmd] } {
+#@     return -code error "Variable '$var' is not defined."
+#@   }
+#@ 
+#@   # Only add it if it's not already there
+#@ 
+#@   if { [lsearch $_Variable_Groups($group) $var] == -1 } {
+#@     lappend _Variable_Groups($group) $var
+#@   }
+#@ 
+#@   return 1
+#@ }
+#@ 
+#@ define_proc_attributes group_variable     -info "Add a variable to a variable group"      -command_group "Builtins" -permanent -dont_abbrev     -define_args { 
+#@       {group "Variable group name" group}
+#@       {variable_name "Variable name" variable_name}}
+#@ 
+#@ ##############################################################################
+#@ #
+#@ #
+#@ #  PROCEDURE:   print_variable_group
+#@ #
+#@ #  ABSTRACT:    Shows variables and their values defined in the given group.
+#@ 
+#@ #
+#@ #               Below the proc is the command which creates the command
+#@ #               help information and semantic data for the argument.
+#@ #
+#@ #  RETURNS:     1 if it is successful.
+#@ #               error code of the variable group does not exist.
+#@ #
+#@ #  SYNTAX:      print_variable_group group_name
+#@ #
+#@ ##############################################################################
+#@ #
+#@ 
+#@ proc print_variable_group { args } {
+#@   global _Variable_Groups
+#@ 
+#@   parse_proc_arguments -args $args resarr
+#@   set group $resarr(group)
+#@ 
+#@   if { [string compare $group "all"] == 0 } {
+#@     set cmd "uplevel #0 \{printvar\}"
+#@     return [eval $cmd]
+#@   }
+#@ 
+#@   if { ![info exists _Variable_Groups($group)] } {
+#@     return -code error "Variable group '$group' does not exist."
+#@   }
+#@ 
+#@   # Print out each global variable in the list. To be totally bulletproof, 
+#@   # test that each variable in the group is still defined.  If not, remove 
+#@   # it from the list.
+#@  
+#@   foreach var [lsort $_Variable_Groups($group)] {
+#@     set cmd "uplevel #0 \{info exists $var\}"
+#@     if { ![eval $cmd] } {
+#@       # Remove it
+#@       set n [lsearch $_Variable_Groups($group) $var]
+#@       set $_Variable_Groups($group) [lreplace $_Variable_Groups($group) $n $n]
+#@     } else {
+#@       # Print it.
+#@       set cmd "uplevel #0 \{set $var\}"
+#@       set val [eval $cmd]
+#@       echo [format "%-25s = \"%s\"" $var $val]
+#@     }
+#@   }
+#@ 
+#@   return 1
+#@ }
+#@ 
+#@ define_proc_attributes print_variable_group     -info "Print the contents of a variable group"      -command_group "Builtins" -permanent      -define_args {{group "Variable group name" group}}
+#@ 
+#@ 
+#@ 
+#@ ##############################################################################
+#@ #
+#@ #
+#@ #  PROCEDURE:   _Variable_Groups_Get_Groups
+#@ #
