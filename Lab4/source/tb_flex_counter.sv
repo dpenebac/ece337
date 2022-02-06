@@ -6,7 +6,7 @@
 // Version:     1.0  Initial Design Entry
 // Description: Flex Counter Test Bench
 
-`timescale 1ns/10ps
+`timescale 10ns/100ps
 
 module tb_flex_counter
 ();
@@ -165,6 +165,7 @@ module tb_flex_counter
         test_case = "Rollover Value not a power of 2";
         test_num = 2;
         reset_dut();
+        normalClear();
         countError = 0;
         flagError = 0;
 
@@ -176,7 +177,7 @@ module tb_flex_counter
             @(posedge tb_clk);
             checkOutput(expected_out, expected_flag, "Rollover Value not a power of 2");
             if (tb_rollover_val == tb_count_out)
-                expected_out = 1'b0;
+                expected_out = 1'b1;
             else
                 expected_out = expected_out + 1;
         end
@@ -201,7 +202,7 @@ module tb_flex_counter
             @(posedge tb_clk);
             checkOutput(expected_out, expected_flag, "Continuous");
             if (tb_rollover_val == tb_count_out)
-                expected_out = 1'b0;
+                expected_out = 1'b1;
             else
                 expected_out = expected_out + 1;
         end
@@ -226,7 +227,7 @@ module tb_flex_counter
             @(posedge tb_clk);
             checkOutput(expected_out, expected_flag, "Discountinous Counting");
             if (tb_rollover_val == tb_count_out)
-                expected_out = 1'b0;
+                expected_out = 1'b1;
             else
                 expected_out = expected_out + 1;
             tb_count_enable = 1'b0;
@@ -256,7 +257,7 @@ module tb_flex_counter
             @(posedge tb_clk);
             checkOutput(expected_out, expected_flag, "Clearing While Counting");
             if (tb_rollover_val == tb_count_out)
-                expected_out = 1'b0;
+                expected_out = 1'b1;
             else
                 expected_out = expected_out + 1;
             tb_count_enable = 1'b0;
@@ -264,10 +265,11 @@ module tb_flex_counter
             normalClear();
             @(posedge tb_clk)
             tb_count_enable = 1'b1;
+
             @(posedge tb_clk);
             checkOutput(expected_out, expected_flag, "Clearing While Counting");
             if (tb_rollover_val == tb_count_out)
-                expected_out = 1'b0;
+                expected_out = 1'b1;
             else
                 expected_out = expected_out + 1;
             tb_count_enable = 1'b0;

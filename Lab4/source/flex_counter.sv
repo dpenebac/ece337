@@ -16,6 +16,7 @@ module flex_counter
     output logic [NUM_CNT_BITS - 1 : 0] count_out,
     output logic rollover_flag
 );
+
     logic [NUM_CNT_BITS - 1 : 0] next_count;
 
     always_ff @(posedge clk, posedge clear, negedge n_rst) begin
@@ -28,23 +29,21 @@ module flex_counter
     end
 
     always_comb begin
+        if (rollover_val == count_out)
+            next_count = 1'b1;
+        else if (count_enable == 1'b1)
+            next_count = count_out + 1;
+        else 
+            next_count = count_out;
+    end
+
+    always_comb begin
         if (rollover_val == count_out) begin
             rollover_flag = 1'b1;
         end
         else begin
             rollover_flag = 1'b0;
         end
-    end
-
-    always_comb begin
-        if (count_enable == 1'b1) begin
-            if (rollover_val == count_out)
-                next_count = 1'b0;
-            else
-                next_count = next_count + 1;
-        end
-        else
-            next_count = count_out;
     end
 
 endmodule
