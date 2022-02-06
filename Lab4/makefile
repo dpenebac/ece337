@@ -356,10 +356,30 @@ report_power -hier >> reports/$(MOD_NAME).rep
 
 # Step 5: Output final VHDL and Verilog files
 write_file -format verilog -hierarchy -output "mapped/$(MOD_NAME).v"
+
+#Second Compilation Run
+
+#step 2
+set_max_delay 1.45 -from "count_out_reg[0]" -to "rollover_flag"
+
+#step 3
+set_structure true -design adder_16 -boolean true -boolean_effort medium
+compile -map_effort high -boundary_optimization
+
+#step4
+report_timing -path full -delay max -max_paths 1 -nworst 1 > reports/$(MOD_NAME).rep
+report_area >> reports/$(MOD_NAME).rep
+report_power -hier >> reports/$(MOD_NAME).rep
+
+#step 5
+write_file -format verilog -hierarchy -output "mapped/$(MOD_NAME).v"
+
+
 echo "\nScript Done\n"
 echo "\nChecking Design\n"
 check_design
 quit
+
 endef
 
 # Define the target that will actually invoke the synthesis commands through design compiler

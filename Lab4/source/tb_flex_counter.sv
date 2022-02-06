@@ -7,27 +7,29 @@
 // Description: Flex Counter Test Bench
 
 `timescale 10ns/100ps
+//10ns/100ps works for somereason
+//1ns/10ps doesn't work at all
 
 module tb_flex_counter
 ();
 
-    localparam NUM_BITS = 3;
+    localparam NUM_CNT_BITS = 3;
 
     localparam  CLK_PERIOD    = 1;
     localparam  FF_SETUP_TIME = 0.190;
     localparam  FF_HOLD_TIME  = 0.100;
+    localparam  CHECK_DELAY   = (CLK_PERIOD - FF_SETUP_TIME);
     localparam resetLogic = 0;
 
     integer test_num;
     string test_case;
 
     logic tb_clk, tb_n_rst, tb_clear, tb_count_enable;
-    logic [NUM_BITS - 1 : 0] tb_rollover_val;
-    logic [NUM_BITS - 1 : 0] tb_count_out;
+    logic [NUM_CNT_BITS - 1 : 0] tb_rollover_val;
+    logic [NUM_CNT_BITS - 1 : 0] tb_count_out;
     logic tb_rollover_flag;
 
-
-    logic [NUM_BITS - 1 : 0] expected_out;
+    logic [NUM_CNT_BITS - 1 : 0] expected_out;
     logic expected_flag;
     assign expected_flag = (expected_out == tb_rollover_val) ? 1 : 0;
     logic countError, flagError;
@@ -61,7 +63,7 @@ module tb_flex_counter
     // check output and rollover flag
     // ************************************************************************
     task checkOutput;
-        input logic [NUM_BITS - 1 : 0] expectedOut;
+        input logic [NUM_CNT_BITS - 1 : 0] expectedOut;
         input logic expectedFlag;
         input string check;
     begin
@@ -101,7 +103,6 @@ module tb_flex_counter
     // End Tasks
     // ************************************************************************
 
-
     //Generate clock
     always begin
         tb_clk = 1'b0;
@@ -111,7 +112,8 @@ module tb_flex_counter
     end
 
     //DUT port map
-    flex_counter DUT(.clk(tb_clk), .n_rst(tb_n_rst), .clear(tb_clear), .count_enable(tb_count_enable),
+    //NUM_BITS not working
+    flex_counter #(.NUM_CNT_BITS(NUM_CNT_BITS)) DUT (.clk(tb_clk), .n_rst(tb_n_rst), .clear(tb_clear), .count_enable(tb_count_enable),
                           .rollover_val(tb_rollover_val), .count_out(tb_count_out), .rollover_flag(tb_rollover_flag));
 
     initial begin
@@ -134,7 +136,7 @@ module tb_flex_counter
         test_case = "Power on Reset";
         test_num = 1;
 
-        assign tb_rollover_val = {NUM_BITS{1'b1}};
+        assign tb_rollover_val = {NUM_CNT_BITS{1'b1}};
         
         #(0.1);
 
@@ -169,10 +171,10 @@ module tb_flex_counter
         countError = 0;
         flagError = 0;
 
-        assign tb_rollover_val = {NUM_BITS{1'b1}} - 1; //sets all bits of rollover val == 1 - 1
+        assign tb_rollover_val = {NUM_CNT_BITS{1'b1}} - 4; //sets all bits of rollover val == 1 - 1
         
         tb_count_enable = 1'b1;
-        for (i = 0; i < (2 ** NUM_BITS) + 2; i++)
+        for (i = 0; i < (2 ** NUM_CNT_BITS) + 2; i++)
         begin
             @(posedge tb_clk);
             checkOutput(expected_out, expected_flag, "Rollover Value not a power of 2");
@@ -194,10 +196,10 @@ module tb_flex_counter
         expected_out = 0;
         countError = 0;
         flagError = 0;
-        assign tb_rollover_val = {NUM_BITS{1'b1}}; //sets all bits of rollover val == 1
+        assign tb_rollover_val = {NUM_CNT_BITS{1'b1}}; //sets all bits of rollover val == 1
 
         tb_count_enable = 1'b1;
-        for (i = 0; i < (2 ** NUM_BITS) + 2; i++)
+        for (i = 0; i < (2 ** NUM_CNT_BITS) + 2; i++)
         begin
             @(posedge tb_clk);
             checkOutput(expected_out, expected_flag, "Continuous");
@@ -219,10 +221,10 @@ module tb_flex_counter
         expected_out = 0;
         countError = 0;
         flagError = 0;
-        assign tb_rollover_val = {NUM_BITS{1'b1}}; //sets all bits of rollover val == 1
+        assign tb_rollover_val = {NUM_CNT_BITS{1'b1}}; //sets all bits of rollover val == 1
 
         tb_count_enable = 1'b1;
-        for (i = 0; i < (2 ** NUM_BITS) + 2; i++)
+        for (i = 0; i < (2 ** NUM_CNT_BITS) + 2; i++)
         begin
             @(posedge tb_clk);
             checkOutput(expected_out, expected_flag, "Discountinous Counting");
@@ -249,10 +251,10 @@ module tb_flex_counter
         expected_out = 0;
         countError = 0;
         flagError = 0;
-        assign tb_rollover_val = {NUM_BITS{1'b1}}; //sets all bits of rollover val == 1
+        assign tb_rollover_val = {NUM_CNT_BITS{1'b1}}; //sets all bits of rollover val == 1
 
         tb_count_enable = 1'b1;
-        for (i = 0; i < 6; i++)
+        for (i = 0; i < 3; i++)
         begin
             @(posedge tb_clk);
             checkOutput(expected_out, expected_flag, "Clearing While Counting");

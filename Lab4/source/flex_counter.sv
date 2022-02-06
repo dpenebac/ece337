@@ -29,7 +29,7 @@ module flex_counter
     end
 
     always_comb begin
-        if (rollover_val == count_out)
+        if (count_enable == 1'b1 && rollover_val == count_out) //added count_enable == 1'b1 &&
             next_count = 1'b1;
         else if (count_enable == 1'b1)
             next_count = count_out + 1;
