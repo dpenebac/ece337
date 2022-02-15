@@ -5,7 +5,6 @@
 // Lab Section: 337-09
 // Version:     1.0  Initial Design Entry
 // Description: Flex Counter Lab 4
-//
 
 `timescale 10ns/100ps
 
