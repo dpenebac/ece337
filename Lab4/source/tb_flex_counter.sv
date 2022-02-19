@@ -13,7 +13,7 @@
 module tb_flex_counter
 ();
 
-    localparam NUM_CNT_BITS = 3;
+    localparam NUM_CNT_BITS = 4;
 
     localparam  CLK_PERIOD    = 1;
     localparam  FF_SETUP_TIME = 0.190;
@@ -112,8 +112,7 @@ module tb_flex_counter
     end
 
     //DUT port map
-    //NUM_BITS not working
-    flex_counter #(.NUM_CNT_BITS(NUM_CNT_BITS)) DUT (.clk(tb_clk), .n_rst(tb_n_rst), .clear(tb_clear), .count_enable(tb_count_enable),
+    flex_counter DUT (.clk(tb_clk), .n_rst(tb_n_rst), .clear(tb_clear), .count_enable(tb_count_enable),
                           .rollover_val(tb_rollover_val), .count_out(tb_count_out), .rollover_flag(tb_rollover_flag));
 
     initial begin
@@ -171,10 +170,10 @@ module tb_flex_counter
         countError = 0;
         flagError = 0;
 
-        assign tb_rollover_val = {NUM_CNT_BITS{1'b1}} - 4; //sets all bits of rollover val == 1 - 1
+        assign tb_rollover_val = {NUM_CNT_BITS{1'b1}} - 1; //sets all bits of rollover val == 1 - 1
         
         tb_count_enable = 1'b1;
-        for (i = 0; i < (2 ** NUM_CNT_BITS) + 2; i++)
+        for (i = 0; i < (2 ** NUM_CNT_BITS) + 5; i++)
         begin
             @(posedge tb_clk);
             checkOutput(expected_out, expected_flag, "Rollover Value not a power of 2");
@@ -262,11 +261,11 @@ module tb_flex_counter
                 expected_out = 1'b1;
             else
                 expected_out = expected_out + 1;
-            tb_count_enable = 1'b0;
-            @(posedge tb_clk)
+            @(posedge tb_clk);
             normalClear();
-            @(posedge tb_clk)
-            tb_count_enable = 1'b1;
+            expected_out = 0;
+            @(posedge tb_clk);
+            expected_out = 1;
 
             @(posedge tb_clk);
             checkOutput(expected_out, expected_flag, "Clearing While Counting");
@@ -274,13 +273,41 @@ module tb_flex_counter
                 expected_out = 1'b1;
             else
                 expected_out = expected_out + 1;
-            tb_count_enable = 1'b0;
-            @(posedge tb_clk)
+            @(posedge tb_clk);
             normalClear();
-            @(posedge tb_clk)
-            tb_count_enable = 1'b1;
+            expected_out = 0;
+            @(posedge tb_clk);
+            expected_out = 1;
         end
         tb_count_enable = 1'b0;
+
+        // ************************************************************************
+        // Test 6: Rollover while count_en is 0
+        // Count_en == 0 therefore count should stay at current count
+        // ************************************************************************
+        $display("\nTEST: 6\n");
+        test_case = "Rollover while count_en is 0";
+        test_num = 6;
+        reset_dut();
+        normalClear();
+        expected_out = 0;
+        countError = 0;
+        flagError = 0;
+        assign tb_rollover_val = {NUM_CNT_BITS{1'b1}}; //sets all bits of rollover val == 1
+
+
+        tb_count_enable = 1'b1;
+        for (i = 0; i < (2 ** NUM_CNT_BITS) + 2; i++)
+        begin
+            if (tb_rollover_val == expected_out) begin
+                tb_count_enable = 1'b0;
+            end
+            @(posedge tb_clk);
+            checkOutput(expected_out, expected_flag, "Continuous");
+            if (tb_rollover_val != expected_out)
+                expected_out = expected_out + 1;
+        end
+
     end
 
     final begin

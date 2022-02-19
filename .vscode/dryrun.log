@@ -1,0 +1,6 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory `/home/ecegrid/a/mg108/ece337'
+make: Leaving directory `/home/ecegrid/a/mg108/ece337'
+ 
+make: *** No targets specified and no makefile found.  Stop.
+ 

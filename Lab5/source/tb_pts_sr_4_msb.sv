@@ -230,6 +230,8 @@ module tb_pts_sr_4_msb();
     tb_expected_ouput = RESET_OUTPUT_VALUE;
     check_output("after full register is shifted out");
 
+    #(CLK_PERIOD * 3);
+
     // ************************************************************************
     // Test Case 3: Normal Operation with DisContiguous Zero Fill
     // ************************************************************************
@@ -282,6 +284,94 @@ module tb_pts_sr_4_msb();
     end
 
     // STUDENT TODO: Add more test cases here
+
+    // ************************************************************************
+    // Test Case 4: Normal Operation with Contiguous One Stream
+    // ************************************************************************
+    tb_test_num  = tb_test_num + 1;
+    tb_test_case = "Contiguous One Fill";
+    // Start out with inactive value and reset the DUT to isolate from prior tests
+    tb_parallel_in = '1;
+    reset_dut();
+
+    // Define the test data stream for this test case
+    tb_test_data = '0;
+
+    // Define the expected result
+    tb_expected_ouput = RESET_OUTPUT_VALUE;
+
+    // Contiguously stream a full SR of One (Output checking handled in task)
+    send_stream(tb_test_data); //send all 0s
+
+    // Check that proper fill value was used during shifting
+    tb_expected_ouput = RESET_OUTPUT_VALUE;
+    check_output("after full register is shifted out");
+
+    // Define the test data stream for this test case
+    tb_test_data = '1;
+
+    // Define the expected result
+    tb_expected_ouput = 1'b1;
+
+    // Contiguously stream a full SR of One (Output checking handled in task)
+    send_stream(tb_test_data); //send all 1s
+
+    // Check that proper fill value was used during shifting
+    tb_expected_ouput = 1'b1;
+    check_output("after full register is shifted out");
+
+    #(CLK_PERIOD * 3);
+
+    // ************************************************************************
+    // Test Case 5: Normal Operation with DisContiguous Zero Fill
+    // ************************************************************************
+    tb_test_num  = tb_test_num + 1;
+    tb_test_case = "DisContiguous Zero Fill";
+    // Start out with inactive value and reset the DUT to isolate from prior tests
+    tb_parallel_in = '1;
+    reset_dut();
+
+    // Define the test data stream for this test case
+    tb_test_data = 4'b1010;
+
+    // Bootstrap the expected output signal
+    tb_expected_ouput = RESET_OUTPUT_VALUE;
+
+    // Load the stream to send in SR sized chunks
+    load_value(tb_test_data);
+
+    // Disconiguously stream out all of the bits in the provided input vector
+    for(tb_bit_num = 0; tb_bit_num < SR_SIZE_BITS; tb_bit_num++) begin
+      // Update the expected output (serial out MSB-first)
+      tb_curr_bit_index = (SR_MAX_BIT - tb_bit_num);
+      tb_expected_ouput = tb_test_data[tb_curr_bit_index];
+      
+      // Check that the correct value was sent out for this bit
+      $sformat(tb_stream_check_tag, "during bit %0d", tb_bit_num);
+      check_output(tb_stream_check_tag);
+      
+      // Advance to the next bit
+      send_bit();
+
+      // Update expected output value
+      $sformat(tb_stream_check_tag, "after bit %0d (pause)", tb_bit_num);
+      tb_curr_bit_index = tb_curr_bit_index - 1;
+      if(0 > tb_curr_bit_index) begin
+        tb_expected_ouput = RESET_OUTPUT_VALUE;
+      end
+      else begin
+        tb_expected_ouput = tb_test_data[tb_curr_bit_index];
+      end
+
+      // Leave shift enable off, but allow clock cycle to happen
+      // Note: The send bit task already turns off the enable before finishing
+      //       -> Just wait for another clock cycle to pass before looping
+      @(posedge tb_clk);
+      check_output(tb_stream_check_tag);
+      
+      // Add some spacing between the check and the start of the next bit
+      #(0.25 * CLK_PERIOD);
+    end
 
   end
 endmodule

@@ -1,0 +1,374 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 3.82
+# Built for x86_64-redhat-linux-gnu
+# Copyright (C) 2010  Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Mon Feb  7 12:33:10 2022
+
+# Variables
+
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# default
+.SHELLFLAGS := -c
+# environment
+QTDIR = /usr/lib64/qt-3.3
+# environment
+VSCODE_AGENT_FOLDER = /home/ecegrid/a/mg108/.vscode-server
+# environment
+LC_CTYPE = en_US.UTF-8
+# environment
+VSCODE_LOG_NATIVE = false
+# environment
+MODULEPATH = /etc/modulefiles:/usr/share/modulefiles:/etc/modulefiles/pkg:/package/modulefiles/ecn/common:/package/modulefiles/ecn/centos
+# environment
+LMOD_PREPEND_BLOCK = normal
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# environment
+NCSU160 = /package/eda/cells/ncsu-1.6
+# environment
+SCRIPT_ASIC = /package/eda/bin
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# automatic
+@F = $(notdir $@)
+# environment
+TOOLS337 = /home/ecegrid/a/ece337/Course_Prod/Tools
+# environment
+SPECTRE_DEFAULTS = +csfe
+# makefile
+SHELL = /bin/sh
+# environment
+LMOD_DIR = /usr/share/lmod/lmod/libexec
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en","availableLanguages":{}}
+# environment
+CVS_RSH = ssh
+# environment
+_ = /usr/bin/make
+# makefile
+MAKEFILE_LIST := 
+# environment
+define BASH_FUNC_ml()
+() {  eval $($LMOD_DIR/ml_cmd "$@")
+}
+endef
+# environment
+LMOD_COLORIZE = yes
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+MACHTYPE = x86_64
+# environment
+QT_PLUGIN_PATH = /usr/lib64/kde4/plugins:/usr/lib/kde4/plugins
+# environment
+LESSOPEN = ||/usr/bin/lesspipe.sh %s
+# environment
+VSCODE_CWD = /home/ecegrid/a/mg108
+# environment
+LMOD_FULL_SETTARG_SUPPORT = no
+# environment
+SSH_CONNECTION = 73.102.37.122 60228 128.46.4.83 22
+# environment
+PATH = /home/ecegrid/a/mg108/.vscode-server/bin/5554b12acf27056905806867f251c859323ff7e9/bin/remote-cli:./scripts:/home/ecegrid/a/mg108/.vscode-server/bin/5554b12acf27056905806867f251c859323ff7e9/bin:/package/eda/cadence/INNOVUS161/tools/bin:./scripts:/usr/lib64/qt-3.3/bin:/usr/lib64/ccache:/usr/local/bin:/usr/bin:.:/opt/thinlinc/bin:/package/eda/bin:/usr/X/bin:/home/ecegrid/a/ece337/Class0.5u/bin:/package/eda/bin:/package/eda/mg/questa10.7a/questasim/bin:/package/eda/cadence/INNOVUS161/tools/bin:/package/eda/synopsys/syn-K-2015.06-SP1/linux/syn/bin:/package/eda/synopsys/syn-K-2015.06-SP1/bin:/package/eda/cadence/IC618/tools/bin:/package/eda/cadence/IC618/tools/dfII/bin:/package/eda/cadence/ASSURA617_415/tools/bin:/usr/bin:/usr/X11R6/bin:/usr/bin:/usr/X11R6/bin:.:/package/eda/bin:/usr/X/bin:/home/ecegrid/a/ece337/Class0.5u/bin:/usr/bin:/usr/X11R6/bin
+# environment
+LMOD_CMD = /usr/share/lmod/lmod/libexec/lmod
+# environment
+LM_LICENSE_FILE = 1719@marina.ecn.purdue.edu:1720@marina.ecn.purdue.edu:1718@marina.ecn.purdue.edu
+# environment
+QT_GRAPHICSSYSTEM_CHECKED = 1
+# environment
+MTI = /package/eda/mg/questa10.7a/questasim
+# makefile
+CURDIR := /home/ecegrid/a/mg108/ece337
+# environment
+XDG_RUNTIME_DIR = /run/user/78815
+# environment
+MODULEPATH_PACKAGE = /package/modulefiles/ecn
+# environment
+VENDOR = unknown
+# environment
+BASH_ENV = /usr/share/lmod/lmod/init/bash
+# environment
+CDS_AUTO_64BIT = ALL
+# environment
+VSCODE_LOG_STACK = false
+# environment
+LMOD_VERSION = 8.2.7
+# environment
+TOOLSET = NCSU160
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver check-symlink
+# environment
+LS_COLORS = no=36;40:fi=36;40:di=35;40:ln=04;33;40:pi=33;44:so=01;33;44:bd=40;35;01:cd=40;37;01:or=01;05;37;41:mi=01;05;37;41:ex=01;32;40
+# environment
+INNOVUS = /package/eda/cadence/INNOVUS161
+# automatic
+%F = $(notdir $%)
+# environment
+KDEDIRS = /usr
+# default
+MAKEFILES := 
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+PWD = /home/ecegrid/a/mg108/ece337
+# environment
+VSCODE_IPC_HOOK_CLI = /run/user/78815/vscode-ipc-349e9960-6cfe-41ce-b20b-5232cdf81a31.sock
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+MGLS_LICENSE_FILE = 1719@marina.ecn.purdue.edu
+# environment
+MANPATH = /usr/share/lmod/lmod/share/man::/package/eda/synopsys/syn-K-2015.06-SP1/doc/icc/man:/package/eda/synopsys/syn-K-2015.06-SP1/doc/snps_gui/man:/package/eda/synopsys/syn-K-2015.06-SP1/doc/snps_tcl/man:/package/eda/synopsys/syn-K-2015.06-SP1/doc/syn/man:/opt/thinlinc/share/man
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/services/extensions/node/extensionHostProcess
+# environment
+HOME = /home/ecegrid/a/mg108
+# environment
+SYNOPSYS = /package/eda/synopsys/syn-K-2015.06-SP1
+# environment
+LD_LIBRARY_PATH = /usr/lib64:/usr/X11R6/lib:/usr/opt/lib:/usr/lib/sane:/usr/local/lib:/usr/lib/mysql:/usr/lib/qt-3.3/lib:/usr/lib:/lib64:/lib:
+# environment
+EDACFGDISP = 
+# environment
+MODULESHOME = /usr/share/lmod/lmod
+# environment
+LOGNAME = mg108
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+# environment
+MSI2LMP_LIBRARY = /usr/share/lammps/frc_files
+# automatic
++F = $(notdir $+)
+# environment
+EDAPATH = /home/ecegrid/a/ece337/Class0.5u/bin:/package/eda/mg/questa10.7a/questasim/bin:/package/eda/cadence/INNOVUS161/tools/bin:/package/eda/synopsys/syn-K-2015.06-SP1/bin:/package/eda/cadence/IC618/tools/bin:/package/eda/cadence/IC618/tools/dfII/bin:/package/eda/cadence/ASSURA617_415/tools/bin:/usr/bin:/usr/X11R6/bin
+# environment
+CDS_LIC_FILE = 1720@marina.ecn.purdue.edu
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# default
+MAKE_VERSION := 3.82
+# environment
+LMOD_sys = Linux
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+LMOD_arch = x86_64
+# environment
+MAKELEVEL := 0
+# default
+MAKE = $(MAKE_COMMAND)
+# environment
+TARG_TITLE_BAR_PAREN = $(subst ,, )
+# default
+MAKECMDGOALS := all
+# environment
+OSTYPE = linux
+# environment
+SHLVL = 5
+# environment
+MSIM_VARS_SET = 1
+# environment
+XDG_SESSION_ID = 83378
+# environment
+USER = mg108
+# environment
+QTLIB = /usr/lib64/qt-3.3/lib
+# environment
+SERVER_LOC = /home/ecegrid/a/ece337/autoturnin31/client_settings/server.loc
+# environment
+LMOD_SETTARG_CMD = :
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# environment
+define BASH_FUNC_module()
+() {  eval $($LMOD_CMD bash "$@") && eval $(${LMOD_SETTARG_CMD:-:} -s sh)
+}
+endef
+# environment
+CDS_SITE = /package/eda/cells/ncsu-1.6
+# environment
+SYNTHESIS = /package/eda/synopsys/syn-K-2015.06-SP1
+# default
+MAKE_COMMAND := make
+# default
+.VARIABLES := 
+# environment
+ADL_WORKSPACE = ~/ece337
+# automatic
+*F = $(notdir $*)
+# environment
+LANGUAGE = en_US.UTF-8
+# environment
+SCRIPT337 = /home/ecegrid/a/ece337/Course_Prod/Scripts
+# makefile
+MAKEFLAGS = Rrqp
+# environment
+MFLAGS = -Rrqp
+# environment
+SSH_CLIENT = 73.102.37.122 60228 22
+# environment
+MAIL = /var/spool/mail/mg108
+# environment
+EDACFG = 1
+# environment
+LOADEDMODULES = 
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# environment
+ORIGPATH = ./scripts:/usr/lib64/qt-3.3/bin:/usr/lib64/ccache:/usr/local/bin:/usr/bin:.:/opt/thinlinc/bin:/package/eda/bin:/usr/X/bin:/home/ecegrid/a/ece337/Class0.5u/bin:/package/eda/bin
+# environment
+BROWSER = /home/ecegrid/a/mg108/.vscode-server/bin/5554b12acf27056905806867f251c859323ff7e9/bin/helpers/browser.sh
+# environment
+SVN_EDITOR = nano
+# environment
+LMOD_PKG = /usr/share/lmod/lmod
+# environment
+HOME337 = /home/ecegrid/a/ece337
+# environment
+MODULEPATH_LOCAL = /etc/modulefiles
+# environment
+CDSHOME = /package/eda/cadence/IC618
+# environment
+LMOD_PACKAGE_PATH = /etc/lmod
+# automatic
+<F = $(notdir $<)
+# environment
+SETUP337 = /home/ecegrid/a/ece337/Course_Prod/Setups
+# environment
+PROJDIR = /home/ecegrid/a/ece337/autoturnin31/client_settings/Projects/
+# environment
+LAMMPS_POTENTIALS = /usr/share/lammps/potentials
+# environment
+EDITOR = nano
+# environment
+LC_ALL = C
+# environment
+HOSTTYPE = x86_64-linux
+# environment
+VIRTUOSO = /package/eda/cadence/IC618
+# automatic
+^F = $(notdir $^)
+# environment
+CDK_DIR = /package/eda/cells/ncsu-1.6
+# default
+SUFFIXES := 
+# environment
+GROUP = ecnuser
+# environment
+CDS_Netlisting_Mode = Analog
+# environment
+LMOD_ROOT = /usr/share/lmod
+# environment
+LMOD_SETTARG_FULL_SUPPORT = no
+# environment
+CDS_INST_DIR = /package/eda/cadence/IC618
+# default
+.INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
+# environment
+QTINC = /usr/lib64/qt-3.3/include
+# environment
+ASSURA415 = /package/eda/cadence/ASSURA617_415
+# default
+.RECIPEPREFIX := 
+# makefile
+.DEFAULT_GOAL := 
+# environment
+ASSURAHOME = /package/eda/cadence/ASSURA617_415
+# environment
+CLASSDIR = /home/ecegrid/a/ece337/Course_Prod
+# environment
+LANG = C
+# environment
+ 
+make: *** No rule to make target `all'.  Stop.
+ 
+CSHLEVEL = 1
+# environment
+VSCODE_EXTHOST_WILL_SEND_SOCKET = true
+# environment
+HOST = ecegrid-thin1.ecn.purdue.edu
+# variable set hash-table stats:
+# Load=138/1024=13%, Rehash=0, Collisions=17/157=11%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 61, inode 12973215232): 8 files, no impossibilities.
+
+# 8 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+# Not a target:
+all:
+#  Command line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+makefile:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+GNUmakefile:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# files hash-table stats:
+# Load=6/1024=1%, Rehash=0, Collisions=0/15=0%
+# VPATH Search Paths
+
+# No `vpath' search paths.
+
+# No general (`VPATH' variable) search path.
+
+# # of strings in strcache: 0 / lookups = 19 / hits = 19
+# # of strcache buffers: 1 (* 8176 B/buffer = 8176 B)
+# strcache used: total = 0 (123) / max = 0 / min = 8176 / avg = 0
+# strcache free: total = 0 (8053) / max = 0 / min = 8176 / avg = 0
+
+# strcache hash-table stats:
+# Load=16/8192=0%, Rehash=0, Collisions=1/19=5%
+# Finished Make data base on Mon Feb  7 12:33:10 2022
+
+ 

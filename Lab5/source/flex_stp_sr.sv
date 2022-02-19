@@ -23,11 +23,11 @@ module flex_stp_sr
 
     always_ff @(posedge clk, negedge n_rst) begin
         if (n_rst == 1'b0)
-            parallel_out <= {(NUM_BITS - 1){1'b1}};
+            parallel_out <= {NUM_BITS{1'b1}};
         else if (shift_enable)
             case (SHIFT_MSB)
-                0 : parallel_out <= {parallel_out[NUM_BITS - 2 : 0], serial_in};
-                1 : parallel_out <= {serial_in, parallel_out[NUM_BITS - 2 : 0]};
+                0 : parallel_out <= {serial_in, parallel_out[NUM_BITS - 1 : 1]};
+                1 : parallel_out <= {parallel_out[NUM_BITS - 2 : 0], serial_in};
             endcase
         else
             parallel_out <= parallel_out;

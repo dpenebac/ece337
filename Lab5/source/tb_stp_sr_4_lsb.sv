@@ -1,14 +1,14 @@
 // $Id: $
-// File name:   tb_stp_sr_4_msb.sv
-// Created:     9/14/2018
-// Author:      Tim Pritchett
-// Lab Section: 9999
+// File name:   tb_stp_sr_4_lsb.sv
+// Created:     2/14/2022
+// Author:      Dorien Penebacker
+// Lab Section: 337-09
 // Version:     1.0  Initial Design Entry
 // Description: Test bench for the default settings versions of Flex STP SR
 
 `timescale 1ns / 10ps
 
-module tb_stp_sr_4_msb();
+module tb_stp_sr_4_lsb();
   // Define parameters
   // Common parameters
   localparam CLK_PERIOD        = 2.5;
@@ -81,15 +81,10 @@ module tb_stp_sr_4_msb();
   endtask
 
   // Task to manage the timing of sending one bit through the shift register
-  task send_bit;  always begin
-        // Start with clock low to avoid false rising edge events at t=0
-        tb_clk = 1'b0;
-        // Wait half of the clock period before toggling clock value (maintain 50% duty cycle)
-        #(CLK_PERIOD/2.0);
-        tb_clk = 1'b1;
-        // Wait half of the clock period before toggling clock value via rerunning the block (maintain 50% duty cycle)
-        #(CLK_PERIOD/2.0);
-    endent timing errors
+  task send_bit;
+    input logic bit_to_send;
+  begin
+    // Synchronize to the negative edge of clock to prevent timing errors
     @(negedge tb_clk);
     
     // Set the value of the bit
@@ -130,21 +125,13 @@ module tb_stp_sr_4_msb();
   end
 
   // DUT Portmap
-  stp_sr_4_msb DUT (.clk(tb_clk), .n_rst(tb_n_rst), 
+  stp_sr_4_lsb DUT (.clk(tb_clk), .n_rst(tb_n_rst), 
                     .serial_in(tb_serial_in), 
                     .shift_enable(tb_shift_enable), 
                     .parallel_out(tb_parallel_out));
 
 
-  // Test bench main process  always begin
-        // Start with clock low to avoid false rising edge events at t=0
-        tb_clk = 1'b0;
-        // Wait half of the clock period before toggling clock value (maintain 50% duty cycle)
-        #(CLK_PERIOD/2.0);
-        tb_clk = 1'b1;
-        // Wait half of the clock period before toggling clock value via rerunning the block (maintain 50% duty cycle)
-        #(CLK_PERIOD/2.0);
-    end
+  // Test bench main process
   initial begin
     // Initialize all of the test inputs
     tb_n_rst            = 1'b1; // Initialize to be inactive
@@ -230,7 +217,7 @@ module tb_stp_sr_4_msb();
       // Send the current bit
       send_bit(tb_test_data[tb_bit_num]);
       // Update expected output value
-      tb_expected_ouput = {tb_expected_ouput[(SR_MAX_BIT-1):0], 1'b0};
+      tb_expected_ouput = {1'b0, tb_expected_ouput[(SR_MAX_BIT):1]};
 
       // Check that the current bit got pulled in
       $sformat(tb_stream_check_tag, "for bit %0d", tb_bit_num);
@@ -299,7 +286,7 @@ module tb_stp_sr_4_msb();
       // Send the current bit
       send_bit(tb_test_data[tb_bit_num]);
       // Update expected output value
-      tb_expected_ouput = {tb_expected_ouput[(SR_MAX_BIT-1):0], 1'b0};
+      tb_expected_ouput = {1'b0, tb_expected_ouput[(SR_MAX_BIT):1]};
 
       // Check that the current bit got pulled in
       $sformat(tb_stream_check_tag, "for bit %0d", tb_bit_num);
@@ -324,7 +311,7 @@ module tb_stp_sr_4_msb();
       // Send the current bit
       send_bit(tb_test_data[tb_bit_num]);
       // Update expected output value
-      tb_expected_ouput = {tb_expected_ouput[(SR_MAX_BIT-1):0], 1'b1};
+      tb_expected_ouput = {1'b1, tb_expected_ouput[(SR_MAX_BIT):1]};
 
       // Check that the current bit got pulled in
       $sformat(tb_stream_check_tag, "for bit %0d", tb_bit_num);

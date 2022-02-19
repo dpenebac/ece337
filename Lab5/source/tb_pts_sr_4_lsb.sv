@@ -1,14 +1,14 @@
 // $Id: $
-// File name:   tb_stp_sr_4_msb.sv
-// Created:     9/14/2018
-// Author:      Tim Pritchett
-// Lab Section: 9999
+// File name:   tb_pts_sr_4_lsb.sv
+// Created:     2/14/2022
+// Author:      Dorien Penebacker
+// Lab Section: 337-09
 // Version:     1.0  Initial Design Entry
-// Description: Test bench for the default settings versions of Flex STP SR
+// Description: Test bench for the default settings versions of Flex PTS SR LSB
 
 `timescale 1ns / 10ps
 
-module tb_stp_sr_4_msb();
+module tb_pts_sr_4_lsb();
   // Define parameters
   // Common parameters
   localparam CLK_PERIOD        = 2.5;
@@ -17,28 +17,30 @@ module tb_stp_sr_4_msb();
   localparam  INACTIVE_VALUE     = 1'b1;
   localparam  SR_SIZE_BITS       = 4;
   localparam  SR_MAX_BIT         = SR_SIZE_BITS - 1;
-  localparam  RESET_OUTPUT_VALUE = {SR_SIZE_BITS{1'b1}};
+  localparam  RESET_OUTPUT_VALUE = 1'b1;
 
   // Declare Test Case Signals
   integer tb_test_num;
   string  tb_test_case;
   string  tb_stream_check_tag;
-  int     tb_bit_num;
+  integer tb_bit_num;
+  integer tb_curr_bit_index;
   logic   tb_mismatch;
   logic   tb_check;
 
   // Declare the Test Bench Signals for Expected Results
-  logic [SR_MAX_BIT:0] tb_expected_ouput;
-  logic tb_test_data [];
+  logic                tb_expected_ouput;
+  logic [SR_MAX_BIT:0] tb_test_data;
 
   // Declare DUT Connection Signals
   logic                tb_clk;
   logic                tb_n_rst;
   logic                tb_shift_enable;
-  logic                tb_serial_in;
-  logic [SR_MAX_BIT:0] tb_parallel_out;
-
-// Task for standard DUT reset procedure
+  logic                tb_load_enable;
+  logic [SR_MAX_BIT:0] tb_parallel_in;
+  logic                tb_serial_out;
+  
+  // Task for standard DUT reset procedure
   task reset_dut;
   begin
     // Activate the reset
@@ -66,12 +68,12 @@ module tb_stp_sr_4_msb();
   begin
     tb_mismatch = 1'b0;
     tb_check    = 1'b1;
-    if(tb_expected_ouput == tb_parallel_out) begin // Check passed
-      $info("Correct parallel output %s during %s test case", check_tag, tb_test_case);
+    if(tb_expected_ouput == tb_serial_out) begin // Check passed
+      $info("Correct serial output %s during %s test case", check_tag, tb_test_case);
     end
     else begin // Check failed
       tb_mismatch = 1'b1;
-      $error("Incorrect parallel output %s during %s test case", check_tag, tb_test_case);
+      $error("Incorrect serial output %s during %s test case", check_tag, tb_test_case);
     end
 
     // Wait some small amount of time so check pulse timing is visible on waves
@@ -80,20 +82,12 @@ module tb_stp_sr_4_msb();
   end
   endtask
 
-  // Task to manage the timing of sending one bit through the shift register
-  task send_bit;  always begin
-        // Start with clock low to avoid false rising edge events at t=0
-        tb_clk = 1'b0;
-        // Wait half of the clock period before toggling clock value (maintain 50% duty cycle)
-        #(CLK_PERIOD/2.0);
-        tb_clk = 1'b1;
-        // Wait half of the clock period before toggling clock value via rerunning the block (maintain 50% duty cycle)
-        #(CLK_PERIOD/2.0);
-    endent timing errors
+  // Task to manage the timing of sending one bit out of the shift register
+  task send_bit;
+  begin
+    // Synchronize to the negative edge of clock to prevent timing errors
     @(negedge tb_clk);
     
-    // Set the value of the bit
-    tb_serial_in = bit_to_send;
     // Activate the shift enable
     tb_shift_enable = 1'b1;
 
@@ -106,14 +100,45 @@ module tb_stp_sr_4_msb();
   end
   endtask
 
+  // Task to manage the timing of loading a new bit vector into the shift register
+  task load_value;
+    input logic [SR_MAX_BIT:0] value_to_load;
+  begin
+    // Synchronize to the negative edge of clock to prevent timing errors
+    @(negedge tb_clk);
+     
+    // Set the value of the load port (parallel_in)
+    tb_parallel_in = value_to_load;
+
+    // Activate the load enable
+    tb_load_enable = 1'b1;
+
+    // Wait for the value to have been shifted in on the rising clock edge
+    @(posedge tb_clk);
+    #(PROPAGATION_DELAY);
+
+    // Turn off the Shift enable
+    tb_load_enable = 1'b0;
+  end
+  endtask
+
   // Task to contiguosly send a stream of bits through the shift register
   task send_stream;
-    input logic bit_stream [];
+    input logic [SR_MAX_BIT:0] bits_to_stream;
   begin
+    // Load the stream to send in SR sized chunks
+    load_value(bits_to_stream);
+
     // Coniguously stream out all of the bits in the provided input vector
-    for(tb_bit_num = 0; tb_bit_num < bit_stream.size(); tb_bit_num++) begin
-      // Send the current bit
-      send_bit(bit_stream[tb_bit_num]);
+    for(tb_bit_num = 0; tb_bit_num < SR_SIZE_BITS; tb_bit_num++) begin
+      // Update the expected output (serial out MSB-first)
+      tb_curr_bit_index = (SR_MAX_BIT - tb_bit_num);
+      tb_expected_ouput = bits_to_stream[tb_curr_bit_index];
+      // Check that the correct value was sent out for this bit
+      $sformat(tb_stream_check_tag, "during bit %0d", tb_bit_num);
+      check_output(tb_stream_check_tag);
+      // Advance to the next bit
+      send_bit();
     end
   end
   endtask
@@ -130,30 +155,24 @@ module tb_stp_sr_4_msb();
   end
 
   // DUT Portmap
-  stp_sr_4_msb DUT (.clk(tb_clk), .n_rst(tb_n_rst), 
-                    .serial_in(tb_serial_in), 
-                    .shift_enable(tb_shift_enable), 
-                    .parallel_out(tb_parallel_out));
+  pts_sr_4_lsb DUT (.clk(tb_clk), .n_rst(tb_n_rst),
+                    .parallel_in(tb_parallel_in),
+                    .shift_enable(tb_shift_enable),
+                    .load_enable(tb_load_enable),
+                    .serial_out(tb_serial_out));
 
-
-  // Test bench main process  always begin
-        // Start with clock low to avoid false rising edge events at t=0
-        tb_clk = 1'b0;
-        // Wait half of the clock period before toggling clock value (maintain 50% duty cycle)
-        #(CLK_PERIOD/2.0);
-        tb_clk = 1'b1;
-        // Wait half of the clock period before toggling clock value via rerunning the block (maintain 50% duty cycle)
-        #(CLK_PERIOD/2.0);
-    end
+  // Test bench main process
   initial begin
     // Initialize all of the test inputs
     tb_n_rst            = 1'b1; // Initialize to be inactive
-    tb_serial_in        = 1'b1; // Initialize to inactive value
+    tb_parallel_in      = '1;   // Initialize to be reset value
     tb_shift_enable     = 1'b0; // Initialize to be inactive
+    tb_load_enable      = 1'b0; // Initialize to be inactive
     tb_test_num         = 0;    // Initialize test case counter
     tb_test_case        = "Test bench initializaton";
     tb_stream_check_tag = "N/A";
     tb_bit_num          = -1;   // Initialize to invalid number
+    tb_curr_bit_index   = -1;   // Initialize to invalid number
     tb_mismatch         = 1'b0;
     tb_check            = 1'b0;
     // Wait some time before starting first test case
@@ -167,9 +186,9 @@ module tb_stp_sr_4_msb();
     // Note: Do not use reset task during reset test case since we need to specifically check behavior during reset
     // Wait some time before applying test case stimulus
     #(0.1);
-    // Apply test case initial stimulus
-    tb_serial_in = 1'b0;
-    tb_n_rst     = 1'b0;
+    // Apply test case initial stimulus (non-reset value parralel input)
+    tb_parallel_in = '0;
+    tb_n_rst       = 1'b0;
 
     // Wait for a bit before checking for correct functionality
     #(CLK_PERIOD * 0.5);
@@ -190,25 +209,28 @@ module tb_stp_sr_4_msb();
     check_output("after reset was released");
 
     // ************************************************************************
-    // Test Case 2: Normal Operation with Contiguous Zero Fill
+    // Test Case 2: Normal Operation with Contiguous Zero Stream
     // ************************************************************************
     tb_test_num  = tb_test_num + 1;
     tb_test_case = "Contiguous Zero Fill";
     // Start out with inactive value and reset the DUT to isolate from prior tests
-    tb_serial_in = 1'b1;
+    tb_parallel_in = '1;
     reset_dut();
 
     // Define the test data stream for this test case
-    tb_test_data = '{SR_SIZE_BITS{1'b0}};
+    tb_test_data = '0;
 
     // Define the expected result
-    tb_expected_ouput = '0;
+    tb_expected_ouput = RESET_OUTPUT_VALUE;
 
-    // Contiguously stream enough zeros to fill the shift register
+    // Contiguously stream a full SR of Zeros (Output checking handled in task)
     send_stream(tb_test_data);
 
-    // Check the result of the full stream
-    check_output("after zero fill stream");
+    // Check that proper fill value was used during shifting
+    tb_expected_ouput = RESET_OUTPUT_VALUE;
+    check_output("after full register is shifted out");
+
+    #(CLK_PERIOD * 3);
 
     // ************************************************************************
     // Test Case 3: Normal Operation with DisContiguous Zero Fill
@@ -216,33 +238,47 @@ module tb_stp_sr_4_msb();
     tb_test_num  = tb_test_num + 1;
     tb_test_case = "DisContiguous Zero Fill";
     // Start out with inactive value and reset the DUT to isolate from prior tests
-    tb_serial_in = 1'b1;
+    tb_parallel_in = '1;
     reset_dut();
 
     // Define the test data stream for this test case
-    tb_test_data = '{SR_SIZE_BITS{1'b0}};
+    tb_test_data = 4'b0101;
 
     // Bootstrap the expected output signal
     tb_expected_ouput = RESET_OUTPUT_VALUE;
 
+    // Load the stream to send in SR sized chunks
+    load_value(tb_test_data);
+
     // Disconiguously stream out all of the bits in the provided input vector
-    for(tb_bit_num = 0; tb_bit_num < tb_test_data.size(); tb_bit_num++) begin
-      // Send the current bit
-      send_bit(tb_test_data[tb_bit_num]);
-      // Update expected output value
-      tb_expected_ouput = {tb_expected_ouput[(SR_MAX_BIT-1):0], 1'b0};
-
-      // Check that the current bit got pulled in
-      $sformat(tb_stream_check_tag, "for bit %0d", tb_bit_num);
+    for(tb_bit_num = 0; tb_bit_num < SR_SIZE_BITS; tb_bit_num++) begin
+      // Update the expected output (serial out MSB-first)
+      tb_curr_bit_index = (SR_MAX_BIT - tb_bit_num);
+      tb_expected_ouput = tb_test_data[tb_curr_bit_index];
+      
+      // Check that the correct value was sent out for this bit
+      $sformat(tb_stream_check_tag, "during bit %0d", tb_bit_num);
       check_output(tb_stream_check_tag);
+      
+      // Advance to the next bit
+      send_bit();
 
-      // Keep the value the same but leave shift enable off for at least a cycle
+      // Update expected output value
+      $sformat(tb_stream_check_tag, "after bit %0d (pause)", tb_bit_num);
+      tb_curr_bit_index = tb_curr_bit_index - 1;
+      if(0 > tb_curr_bit_index) begin
+        tb_expected_ouput = RESET_OUTPUT_VALUE;
+      end
+      else begin
+        tb_expected_ouput = tb_test_data[tb_curr_bit_index];
+      end
+
+      // Leave shift enable off, but allow clock cycle to happen
       // Note: The send bit task already turns off the enable before finishing
       //       -> Just wait for another clock cycle to pass before looping
       @(posedge tb_clk);
-      $sformat(tb_stream_check_tag, "after bit %0d's pause", tb_bit_num);
       check_output(tb_stream_check_tag);
-
+      
       // Add some spacing between the check and the start of the next bit
       #(0.25 * CLK_PERIOD);
     end
@@ -250,96 +286,92 @@ module tb_stp_sr_4_msb();
     // STUDENT TODO: Add more test cases here
 
     // ************************************************************************
-    // Test Case 4: Normal Operation with Contiguous One Fill
+    // Test Case 4: Normal Operation with Contiguous One Stream
     // ************************************************************************
     tb_test_num  = tb_test_num + 1;
     tb_test_case = "Contiguous One Fill";
     // Start out with inactive value and reset the DUT to isolate from prior tests
-    tb_serial_in = 1'b1;
+    tb_parallel_in = '1;
     reset_dut();
 
     // Define the test data stream for this test case
-    tb_test_data = '{SR_SIZE_BITS{1'b0}};
+    tb_test_data = '0;
 
     // Define the expected result
-    tb_expected_ouput = '0;
+    tb_expected_ouput = RESET_OUTPUT_VALUE;
 
-    // Contiguously stream enough zeros to fill the shift register
-    send_stream(tb_test_data); //setting all bits to 0
+    // Contiguously stream a full SR of One (Output checking handled in task)
+    send_stream(tb_test_data); //send all 0s
+
+    // Check that proper fill value was used during shifting
+    tb_expected_ouput = RESET_OUTPUT_VALUE;
+    check_output("after full register is shifted out");
 
     // Define the test data stream for this test case
-    tb_test_data = '{SR_SIZE_BITS{1'b1}};
+    tb_test_data = '1;
 
     // Define the expected result
-    tb_expected_ouput = '1;
+    tb_expected_ouput = 1'b1;
 
-    // Contiguously stream enough zeros to fill the shift register
-    send_stream(tb_test_data);
+    // Contiguously stream a full SR of One (Output checking handled in task)
+    send_stream(tb_test_data); //send all 1s
 
-    // Check the result of the full stream
-    check_output("after zero fill stream");
+    // Check that proper fill value was used during shifting
+    tb_expected_ouput = 1'b1;
+    check_output("after full register is shifted out");
+
+    #(CLK_PERIOD * 3);
 
     // ************************************************************************
-    // Test Case 5: Normal Operation with DisContiguous One Fill
+    // Test Case 5: Normal Operation with DisContiguous Zero Fill
     // ************************************************************************
     tb_test_num  = tb_test_num + 1;
-    tb_test_case = "DisContiguous One Fill";
+    tb_test_case = "DisContiguous Zero Fill";
     // Start out with inactive value and reset the DUT to isolate from prior tests
-    tb_serial_in = 1'b1;
+    tb_parallel_in = '1;
     reset_dut();
 
     // Define the test data stream for this test case
-    tb_test_data = '{SR_SIZE_BITS{1'b0}};
+    tb_test_data = 4'b1100;
 
     // Bootstrap the expected output signal
     tb_expected_ouput = RESET_OUTPUT_VALUE;
 
+    // Load the stream to send in SR sized chunks
+    load_value(tb_test_data);
+
     // Disconiguously stream out all of the bits in the provided input vector
-    for(tb_bit_num = 0; tb_bit_num < tb_test_data.size(); tb_bit_num++) begin
-      // Send the current bit
-      send_bit(tb_test_data[tb_bit_num]);
-      // Update expected output value
-      tb_expected_ouput = {tb_expected_ouput[(SR_MAX_BIT-1):0], 1'b0};
-
-      // Check that the current bit got pulled in
-      $sformat(tb_stream_check_tag, "for bit %0d", tb_bit_num);
+    for(tb_bit_num = 0; tb_bit_num < SR_SIZE_BITS; tb_bit_num++) begin
+      // Update the expected output (serial out MSB-first)
+      tb_curr_bit_index = (SR_MAX_BIT - tb_bit_num);
+      tb_expected_ouput = tb_test_data[tb_curr_bit_index];
+      
+      // Check that the correct value was sent out for this bit
+      $sformat(tb_stream_check_tag, "during bit %0d", tb_bit_num);
       check_output(tb_stream_check_tag);
+      
+      // Advance to the next bit
+      send_bit();
 
-      // Keep the value the same but leave shift enable off for at least a cycle
+      // Update expected output value
+      $sformat(tb_stream_check_tag, "after bit %0d (pause)", tb_bit_num);
+      tb_curr_bit_index = tb_curr_bit_index - 1;
+      if(0 > tb_curr_bit_index) begin
+        tb_expected_ouput = RESET_OUTPUT_VALUE;
+      end
+      else begin
+        tb_expected_ouput = tb_test_data[tb_curr_bit_index];
+      end
+
+      // Leave shift enable off, but allow clock cycle to happen
       // Note: The send bit task already turns off the enable before finishing
       //       -> Just wait for another clock cycle to pass before looping
       @(posedge tb_clk);
-      $sformat(tb_stream_check_tag, "after bit %0d's pause", tb_bit_num);
       check_output(tb_stream_check_tag);
-
+      
       // Add some spacing between the check and the start of the next bit
       #(0.25 * CLK_PERIOD);
     end
 
-          // Define the test data stream for this test case
-    tb_test_data = '{SR_SIZE_BITS{1'b1}};
-
-    // Disconiguously stream out all of the bits in the provided input vector
-    for(tb_bit_num = 0; tb_bit_num < tb_test_data.size(); tb_bit_num++) begin
-      // Send the current bit
-      send_bit(tb_test_data[tb_bit_num]);
-      // Update expected output value
-      tb_expected_ouput = {tb_expected_ouput[(SR_MAX_BIT-1):0], 1'b1};
-
-      // Check that the current bit got pulled in
-      $sformat(tb_stream_check_tag, "for bit %0d", tb_bit_num);
-      check_output(tb_stream_check_tag);
-
-      // Keep the value the same but leave shift enable off for at least a cycle
-      // Note: The send bit task already turns off the enable before finishing
-      //       -> Just wait for another clock cycle to pass before looping
-      @(posedge tb_clk);
-      $sformat(tb_stream_check_tag, "after bit %0d's pause", tb_bit_num);
-      check_output(tb_stream_check_tag);
-
-      // Add some spacing between the check and the start of the next bit
-      #(0.25 * CLK_PERIOD);
-    end
   end
 endmodule
-  

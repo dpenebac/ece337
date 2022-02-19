@@ -28,55 +28,64 @@ module moore
             case(s)
 
                 s0: begin
-                    o <= 0;
                     if (i == 0) begin
                         s <= s0;
+                        o <= 0;
                     end
                     else if (i == 1) begin
                         s <= s1;
+                        o <= 0;
                     end
                 end
 
                 s1: begin
-                    o <= 0;
                     if (i == 0) begin
                         s <= s0;
+                        o <= 0;
                     end
                     else if (i == 1) begin
                         s <= s2;
+                        o <= 0;
                     end
                 end
 
                 s2: begin
-                    o <= 0;
                     if (i == 0) begin
                         s <= s3;
+                        o <= 0;
                     end
                     else if (i == 1) begin
                         s <= s2;
+                        o <= 0;
                     end
                 end
 
                 s3: begin
-                    o <= 0;
                     if (i == 0) begin
                         s <= s0;
+                        o <= 0;
                     end
                     else if (i == 1) begin
                         s <= s4;
+                        o <= 1;
                     end
                 end
 
                 s4: begin
-                    o <= 1;
                     if (i == 0) begin
                         s <= s0;
+                        o <= 0;
                     end
                     else if (i == 1) begin
                         s <= s2;
+                        o <= 0;
                     end
                 end
-            
+
+                default: begin
+                    s <= s0;
+                    o <= 0;
+                end
             endcase
         end
     end

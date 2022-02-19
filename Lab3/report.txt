@@ -1,0 +1,42 @@
+Coverage Report Summary Data by file
+
+=================================================================================
+=== File: source/adder_16bit.sv
+=================================================================================
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                            2         2         0    100.00
+    Toggle Bins                    100        93         7     93.00
+
+=================================================================================
+=== File: source/adder_1bit.sv
+=================================================================================
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                            6         6         0    100.00
+    FEC Expression Terms             6         6         0    100.00
+    Toggle Bins                     10        10         0    100.00
+
+=================================================================================
+=== File: source/adder_nbit.sv
+=================================================================================
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                            4         4         0    100.00
+    Toggle Bins                    134       124        10     92.53
+
+=================================================================================
+=== File: source/tb_adder_16bit.sv
+=================================================================================
+    Enabled Coverage            Active      Hits    Misses % Covered
+    ----------------            ------      ----    ------ ---------
+    Stmts                           52        46         6     88.46
+    Branches                         6         2         4     33.33
+    FEC Condition Terms              3         0         3      0.00
+    Toggle Bins                    234       190        44     81.19
+
+
+TOTAL ASSERTION COVERAGE: 100.00%  ASSERTIONS: 50
+
+Total Coverage By File (code coverage only, filtered view): 62.23%
+

@@ -6,14 +6,17 @@
 // Version:     1.0  Initial Design Entry
 // Description: Flex Counter Lab 4
 //
+
+`timescale 10ns/100ps
+
 module flex_counter
 #(
-    parameter NUM_CNT_BITS = 3
+    parameter NUM_CNT_BITS = 4
 )
 (
     input logic clk, n_rst, clear, count_enable,
-    input logic [NUM_CNT_BITS - 1 : 0] rollover_val,
-    output logic [NUM_CNT_BITS - 1 : 0] count_out,
+    input logic [NUM_CNT_BITS - 1:0] rollover_val,
+    output logic [NUM_CNT_BITS - 1:0] count_out,
     output logic rollover_flag
 );
 
@@ -29,7 +32,7 @@ module flex_counter
     end
 
     always_comb begin
-        if (count_enable == 1'b1 && rollover_val == count_out) //added count_enable == 1'b1 &&
+        if (count_enable == 1'b1 && rollover_val == count_out)
             next_count = 1'b1;
         else if (count_enable == 1'b1)
             next_count = count_out + 1;
