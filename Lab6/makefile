@@ -19,12 +19,12 @@ include /home/ecegrid/a/ece337/Course_Prod/course_make_vars
 #
 # **** list all files on the same line. DO NOT USE the "\" escape character to extend across 
 #      multiple lines. The grading script expects all file names on one line. 
-COMPONENT_FILES	:= 
+COMPONENT_FILES	:= start_bit_det.sv sr_9bit.sv stop_bit_chk.sv timer.sv rcu.sv rx_data_buff.sv
 
 # Specify the name of the top level file (do not include the source folder in the name)
 # NOTE: YOU WILL NEED TO SET THIS VARIABLE'S VALUE WHEN WORKING WITH HEIRARCHICAL DESIGNS
 # AND THE AUTOMATED GRADING SYSTEM
-TOP_LEVEL_FILE	:= 
+TOP_LEVEL_FILE	:= rcv_block.sv
 
 # Specify the filepath of the test bench you want to use (ie. tb_top_level.sv)
 # (do not include the source folder in the name)
@@ -35,7 +35,7 @@ TEST_BENCH	:= tb_$(TOP_LEVEL_FILE)
 #
 # **** list all files on the same line. DO NOT USE the "\" escape character to extend across 
 #      multiple lines. The grading script expects all file names on one line. 
-TB_HELPER_FILES	:= 
+TB_HELPER_FILES	:= flex_counter.sv flex_stp_sr.sv
 
 # Get the top level design and test_bench module names
 TB_MODULE		:= $(notdir $(basename $(TEST_BENCH)))
