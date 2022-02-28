@@ -296,11 +296,15 @@ module tb_rcv_block();
   
     // Append additonal test cases here (such as overrun case)
     
-    // Test case 3: overrun error
-    //check rx_data_buff values
+    // Test case 3: overun error
     @(negedge tb_clk);
     tb_test_num += 1;
     tb_test_case = "Overrun Error";
+
+    //Test case 4: framing error
+    @(negedge tb_clk);
+    tb_test_num += 1;
+    tb_test_case = "Framing Error";
 
     // Setup packet info for debugging/verificaton signals
     tb_test_data       = 8'b11010101;
@@ -315,39 +319,6 @@ module tb_rcv_block();
     tb_expected_data_ready    = tb_test_stop_bit; 
     // Framing error if and only if bad stop_bit ('0') was sent
     tb_expected_framing_error = ~tb_test_stop_bit;
-    //intentionally creating an overrun condition -> overrun should be 1
-    tb_expected_overrun       = 1'b0; //intentionally creating an overrun condition
-    
-    // DUT Reset
-    reset_dut;
-    
-    // Send packet
-    send_packet(tb_test_data, tb_test_stop_bit, tb_test_bit_period);
-    
-    // Wait for 2 data periods to allow DUT to finish processing the packet
-    #(tb_test_bit_period * 2);
-    
-    // Check outputs
-    check_outputs(tb_test_data_read);
-
-    //Test case 4: framing error
-    @(negedge tb_clk);
-    tb_test_num += 1;
-    tb_test_case = "Framing Error";
-
-    // Setup packet info for debugging/verificaton signals
-    tb_test_data       = 8'b11010101;
-    tb_test_stop_bit   = 1'b0; //bad stop bit to cause framing error
-    tb_test_bit_period = WORST_FAST_DATA_PERIOD;
-    tb_test_data_read  = 1'b1;
-    
-    // Define expected ouputs for this test case
-    // For a good packet RX Data value should match data sent
-    tb_expected_rx_data       = 8'b11111111;
-    // Valid stop bit ('1') -> Valid data -> Active data ready output
-    tb_expected_data_ready    = tb_test_stop_bit; 
-    // Framing error if and only if bad stop_bit ('0') was sent
-    tb_expected_framing_error = ~tb_test_stop_bit;
     // Not intentionally creating an overrun condition -> overrun should be 0
     tb_expected_overrun       = 1'b0;
     
@@ -358,7 +329,7 @@ module tb_rcv_block();
     send_packet(tb_test_data, tb_test_stop_bit, tb_test_bit_period);
     
     // Wait for 2 data periods to allow DUT to finish processing the packet
-    #(2 * CLK_PERIOD);
+    #(tb_test_bit_period * 2);
     
     // Check outputs
     check_outputs(tb_test_data_read);

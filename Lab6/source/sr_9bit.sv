@@ -31,7 +31,4 @@ module sr_9bit
   .parallel_out({stop_bit, packet_data})
   );
 
-  //assign stop_bit = (serial_in == 1) ? 1 : 0;
-
-
 endmodule

@@ -6,8 +6,6 @@
 // Version:     1.0  Initial Design Entry
 // Description: Receiver Control Unit
 
-`timescale 1ns / 10ps
-
 module rcu
 (
     input logic clk,
@@ -20,10 +18,9 @@ module rcu
     output logic load_buffer,
     output logic enable_timer
 );
-    typedef enum logic [2:0] {IDLE, READ, WAIT, STOP, LOAD, ERROR} state;
-    state s;
-
-    state next_s;
+    typedef enum logic [2:0] {IDLE, CLEAR, READ, WAIT, STOP, LOAD, ERROR} state_t;
+    state_t s;
+    state_t next_s;
 
     always_ff @(posedge clk, negedge n_rst) begin
         if (n_rst == 1'b0)
@@ -41,6 +38,10 @@ module rcu
                     next_s = READ;
                 else
                     next_s = s;
+            end
+
+            CLEAR: begin
+                next_s = READ;
             end
 
             READ: begin
@@ -79,12 +80,18 @@ module rcu
         enable_timer = 1'b0;
         
         case (s)
-
             IDLE: begin
                 sbc_clear = 1'b0;
                 sbc_enable = 1'b0;
                 load_buffer = 1'b0;
                 enable_timer = 1'b0;
+            end
+
+            CLEAR: begin
+                sbc_clear = 1'b1;
+                sbc_enable = 1'b0;
+                load_buffer = 1'b0;
+                enable_timer = 1'b0; 
             end
 
             READ: begin
@@ -109,7 +116,7 @@ module rcu
             end
 
             ERROR: begin
-                sbc_clear = 1'b1;
+                sbc_clear = 1'b0;
                 sbc_enable = 1'b0;
                 load_buffer = 1'b0;
                 enable_timer = 1'b0;
