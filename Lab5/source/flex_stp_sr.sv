@@ -4,7 +4,7 @@
 // Author:      Dorien Penebacker
 // Lab Section: 337-09
 // Version:     1.0  Initial Design Entry
-// Description: Flexible and Scalable Serial-to-Parallel Shift Register Design
+// Description: Flexible and Scalable Serial-to-Parallel Shift Register Design Lab6
 
 module flex_stp_sr
 #(
@@ -19,18 +19,24 @@ module flex_stp_sr
     output logic [NUM_BITS - 1 : 0] parallel_out
 );
 
-    localparam bits = NUM_BITS - 1;
+    logic [NUM_BITS - 1 : 0] next_out;
 
     always_ff @(posedge clk, negedge n_rst) begin
         if (n_rst == 1'b0)
-            parallel_out <= {NUM_BITS{1'b1}};
-        else if (shift_enable)
-            case (SHIFT_MSB)
-                0 : parallel_out <= {serial_in, parallel_out[NUM_BITS - 1 : 1]};
-                1 : parallel_out <= {parallel_out[NUM_BITS - 2 : 0], serial_in};
-            endcase
+            parallel_out <= '1;
         else
-            parallel_out <= parallel_out;
+            parallel_out <= next_out;
+    end
+
+    always_comb begin
+        if (shift_enable) begin
+            case (SHIFT_MSB)
+                0: next_out = {serial_in, parallel_out[(NUM_BITS - 1) : 1]};
+                1: next_out = {parallel_out[(NUM_BITS - 2) : 0], serial_in};
+            endcase 
+        end
+        else
+            next_out = parallel_out;
     end
 
 endmodule
