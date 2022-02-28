@@ -10,23 +10,23 @@ cModel Technology
 Z0 d/home/ecegrid/a/mg108/ece337/Lab6/source
 vrcu
 Z1 DXx6 sv_std 3 std 0 22 >9az<^>2ff9DAl3OFGaAf1
-!s110 1645821726
+!s110 1645993997
 !i10b 1
-!s100 :9<aX>HbLNkhfk:?8OReH0
-I9FLkbgQkX_>Y6HkeeeIch1
+!s100 @@@4ARmmn?mA]AfeSV2o62
+IHG>0Qk9zMX`0oE;z37VSd3
 Z2 VDg1SIo80bB@j0V0VzS_@n1
 !s105 rcu_sv_unit
 S1
 R0
-w1645821718
+w1645993996
 8rcu.sv
 Frcu.sv
-L0 9
+L0 11
 Z3 OE;L;10.7a;67
 r1
 !s85 0
 31
-!s108 1645821723.000000
+!s108 1645993997.000000
 !s107 rcu.sv|
 !s90 rcu.sv|
 !i113 0

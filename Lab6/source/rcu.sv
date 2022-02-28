@@ -20,51 +20,63 @@ module rcu
     output logic load_buffer,
     output logic enable_timer
 );
-    typedef enum logic [2:0] {IDLE, READ, STOP, LOAD, ERROR} state;
+    typedef enum logic [2:0] {IDLE, READ, WAIT, STOP, LOAD, ERROR} state;
     state s;
 
-    logic next_s;
+    state next_s;
 
     always_ff @(posedge clk, negedge n_rst) begin
         if (n_rst == 1'b0)
             s <= IDLE;
-        else begin
-            case (s)
-                IDLE: begin
-                    if (new_packet_detected)
-                        next_s <= READ;
-                    else
-                        next_s <= s;
-                end
-
-                READ: begin
-                    if (packet_done)
-                        next_s <= STOP;
-                    else
-                        next_s <= s;
-                end
-
-                STOP: begin
-                    if (framing_error)
-                        next_s <= ERROR;
-                    else
-                        next_s <= LOAD;
-                end
-
-                LOAD: begin
-                    next_s <= IDLE;
-                end
-
-                ERROR: begin
-                    next_s <= IDLE;
-                end
-
-                default: next_s <= s;
-            endcase
-        end
+        else
+            s <= next_s;
     end
 
     always_comb begin
+        next_s = s;
+
+        case (s)
+            IDLE: begin
+                if (new_packet_detected)
+                    next_s = READ;
+                else
+                    next_s = s;
+            end
+
+            READ: begin
+                if (packet_done)
+                    next_s = STOP;
+                else
+                    next_s = s;
+            end
+
+            STOP: begin
+                next_s = WAIT;
+            end
+
+            WAIT: begin
+                if (framing_error)
+                    next_s = ERROR;
+                else
+                    next_s = LOAD;
+            end
+
+            LOAD: begin
+                next_s = IDLE;
+            end
+
+            ERROR: begin
+                next_s = IDLE;
+            end
+        endcase
+    end
+
+    always_comb begin
+
+        sbc_clear = 1'b0;
+        sbc_enable = 1'b0;
+        load_buffer = 1'b0;
+        enable_timer = 1'b0;
         
         case (s)
 
@@ -102,14 +114,6 @@ module rcu
                 load_buffer = 1'b0;
                 enable_timer = 1'b0;
             end
-
-            default: begin
-                sbc_clear = 1'b0;
-                sbc_enable = 1'b0;
-                load_buffer = 1'b0;
-                enable_timer = 1'b0;
-            end
-
         endcase
     end
 

@@ -20,17 +20,18 @@ module sr_9bit
 
   flex_stp_sr 
   #(
-    8, 1
+    .NUM_BITS(9), 
+    .SHIFT_MSB(0)
   )
   CORE(
   .clk(clk),
   .n_rst(n_rst),
   .serial_in(serial_in),
   .shift_enable(shift_strobe),
-  .parallel_out(packet_data)
+  .parallel_out({stop_bit, packet_data})
   );
 
-  assign stop_bit = (serial_in == 1) ? 1 : 0;
+  //assign stop_bit = (serial_in == 1) ? 1 : 0;
 
 
 endmodule
