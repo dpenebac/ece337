@@ -1,0 +1,20 @@
+Dorien Penebacker
+mg108
+
+The minimum amount of time for data_ready is 2 clock cycles. 
+The data must remain valid for 3 clock cycles.
+
+The color chosen for each picture differs between all three pictures.
+The first image focuses on vertical lines. 
+The second focuses on horizontal lines.
+The third is somewhat a combination of both. 
+This make sense as the third image is created by merging the colors of the first and second image.
+
+General Syntax
+- $fopen
+- $fclose
+- $fseek
+- $fwrite
+
+Format Specifiers
+- %c, %d, %f, %s
