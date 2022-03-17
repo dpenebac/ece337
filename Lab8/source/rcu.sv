@@ -35,7 +35,7 @@ module rcu
         case (s)
             IDLE: begin
                 if (new_packet_detected)
-                    next_s = READ;
+                    next_s = CLEAR; //need to check this before submission??? (it used to be next_s = READ)
                 else
                     next_s = s;
             end
