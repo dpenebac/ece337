@@ -25,14 +25,14 @@ module fir_filter (
     logic [16:0] data;
 
 
-    sync_low sync_load_coeff (.clk(clk), .n_rst(n_reset), .async_in(load_coeff), .sync_out(sync_lc));
+    //sync_low sync_load_coeff (.clk(clk), .n_rst(n_reset), .async_in(load_coeff), .sync_out(sync_lc));
 
-    sync_low sync_data_ready (.clk(clk), .n_rst(n_reset), .async_in(data_ready), .sync_out(sync_dr));
+    //sync_low sync_data_ready (.clk(clk), .n_rst(n_reset), .async_in(data_ready), .sync_out(sync_dr));
 
     controller controller (.clk(clk), 
                            .n_rst(n_reset),
-                           .dr(sync_dr),
-                           .lc(sync_lc),
+                           .dr(data_ready),
+                           .lc(load_coeff),
                            .overflow(overflow),
                            .cnt_up(cnt_up),
                            .clear(clear),

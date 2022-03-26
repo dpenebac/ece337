@@ -1,11 +1,3 @@
-// $Id: $
-// File name:   tb_ahb_lite_slave.sv
-// Created:     10/1/2018
-// Author:      Tim Pritchett
-// Lab Section: 9999
-// Version:     1.0  Initial Design Entry
-// Description: Starter bus model based test bench for the AHB-Lite-slave module
-
 `timescale 1ns / 10ps
 
 module tb_ahb_lite_slave();
@@ -435,13 +427,94 @@ initial begin
 
   // Student TODO: Add more test cases here
   // Update Navigation Info
-  tb_test_case     = "Need More Tests!";
+
+  //*****************************************************************************
+  // Test Case 1:  Master reads of the AHB-Lite-Slave Interface's result register
+  //*****************************************************************************
+  tb_test_case     = "Master reads of the AHB-Lite-Slave Interface's result register";
   tb_test_case_num = tb_test_case_num + 1;
   init_fir_side();
   init_expected_outs();
 
-  // Reset the DUT to isolate from prior test case
   reset_dut();
+  tb_fir_out = 16'b1111111100000000;
+  enqueue_transaction(1'b1,  1'b0, ADDR_RESULT, tb_fir_out, 1'b0, 1'b1);
+  //execute_transactions(1);
+
+  enqueue_transaction(1'b1,  1'b0, ADDR_RESULT, tb_fir_out[7:0], 1'b0, 1'b0);
+  execute_transactions(2);
+
+  //*****************************************************************************
+  // Test Case 2:  Master reads of the AHB-Lite-Slave Interface's new sample register
+  //*****************************************************************************
+  tb_test_case     = "Master reads of the AHB-Lite-Slave Interface's new sample register";
+  tb_test_case_num = tb_test_case_num + 1;
+  init_fir_side();
+  init_expected_outs();
+
+  reset_dut();
+  tb_test_data = 16'b1111111100000000;
+  enqueue_transaction(1'b1, 1'b1, ADDR_SAMPLE, tb_test_data, 1'b0, 1'b1);
+  enqueue_transaction(1'b1, 1'b0, ADDR_SAMPLE, tb_test_data, 1'b0, 1'b1);
+  execute_transactions(2);
+
+  //*****************************************************************************
+  // Test Case 3:  Master reads of the AHB-Lite-Slave Interface's status register
+  //*****************************************************************************
+  tb_test_case     = "Master reads of the AHB-Lite-Slave Interface's status register";
+  tb_test_case_num = tb_test_case_num + 1;
+  init_fir_side();
+  init_expected_outs();
+
+  reset_dut();
+  tb_err = 1;
+  tb_modwait = 0;
+  tb_test_data = 16'b100000000;
+  enqueue_transaction(1'b1, 1'b0, ADDR_STATUS_ERR, tb_test_data, 1'b0, 1'b0);
+  execute_transactions(1);
+
+  tb_err = 0;
+  tb_modwait = 1;
+  tb_test_data = 16'b1;
+  enqueue_transaction(1'b1, 1'b0, ADDR_STATUS, tb_test_data, 1'b0, 1'b0);
+  execute_transactions(1);
+
+  tb_err = 0;
+  tb_modwait = 0;
+  tb_test_data = 16'b0;
+  enqueue_transaction(1'b1, 1'b0, ADDR_STATUS, tb_test_data, 1'b0, 1'b1);
+  execute_transactions(1);
+
+  //*****************************************************************************
+  // Test Case 4:  Master writes to a wrong address
+  //*****************************************************************************
+  tb_test_case     = "Master writes to a wrong address";
+  tb_test_case_num = tb_test_case_num + 1;
+  init_fir_side();
+  init_expected_outs();
+
+  reset_dut();
+  tb_test_data = 16'b100000000;
+  enqueue_transaction(1'b1, 1'b1, ADDR_RESULT, tb_test_data, 1'b1, 1'b1);
+  execute_transactions(1);
+
+  enqueue_transaction(1'b1, 1'b1, ADDR_STATUS, tb_test_data, 1'b1, 1'b1);
+  execute_transactions(1);
+
+  //*****************************************************************************
+  // Test Case 5:  Master writes of the AHB-Lite-Slave Interface's new sample register
+  //*****************************************************************************
+  tb_test_case     = "Master writes of the AHB-Lite-Slave Interface's new sample register";
+  tb_test_case_num = tb_test_case_num + 1;
+  init_fir_side();
+  init_expected_outs();
+
+  reset_dut();
+  tb_err = 1;
+  tb_modwait = 0;
+  tb_test_data = 16'b1111111100000000;
+  enqueue_transaction(1'b1, 1'b1, ADDR_SAMPLE, tb_test_data, 1'b0, 1'b1);
+  execute_transactions(1);
 
 end
 
